@@ -41,8 +41,12 @@ class PlanExposure:
 		"""
 		return 2.266 * (fwhm_eff / platescale) ** 2
 
+
+
+		For now, assume 1 pixel per target as a result of undersampling
+
 		'''
-		avg_num_pixels = 1
+		avg_num_pixels = 1 
 
 		return avg_num_pixels
 
@@ -65,7 +69,7 @@ class PlanExposure:
 	        The noise due to all of these sources added in quadrature in ADU counts
 	    """
 	    # instrumental squared noise in units of electrons per pixel
-	    inst_noise_sq =  self.params.coadds * (self.params.read_noise**2 + (self.params.dark_current * self.params.exptime))
+	    inst_noise_sq =  self.neff* self.params.coadds * (self.params.read_noise**2) + (self.params.dark_current * self.params.exptime)
 
 	    return inst_noise_sq
 
@@ -76,7 +80,7 @@ class PlanExposure:
 
 	    Parameters
 	    ----------
-	    to be modified 
+	    from LSST, to be modified --------
 	    sky_sed : `Sed`
 	        A Sed object representing the sky (normalized so that sky_sed.calc_mag() gives the sky brightness
 	        in magnitudes per square arcsecond)
@@ -101,17 +105,18 @@ class PlanExposure:
 	    transmitted_sky = sky_brightness_phsarcsec2*self.params.transmission
 	    #print('ph/s/arcsec^2',transmitted_sky)
 
-		#Sky background in units of electrons/s/pixel^2
+		#Sky background in units of electrons/s/pixel
 	    sky_rate_per_sqpixel = transmitted_sky * self.params.qe * (self.neff*self.params.plate_scale)**2
 
+	    return sky_rate_per_sqpixel
 
-	    # Sky background counts
-	    sky_counts = sky_rate_per_sqpixel * self.params.exptime
+	    # # Sky background counts
+	    # sky_counts = sky_rate_per_sqpixel * self.params.exptime
 
-	    #print('K_dark sky per pixel', sky_counts/params.exptime)
-	    self.sky_rate_per_sqpixel = sky_rate_per_sqpixel
+	    # #print('K_dark sky per pixel', sky_counts/params.exptime)
+	    # self.sky_rate_per_sqpixel = sky_rate_per_sqpixel
 
-	    return sky_counts
+	    # return sky_counts
 
 
 	def calc_total_noise(self):
@@ -130,11 +135,10 @@ class PlanExposure:
 		    (this is simga^2_tot * neff in equation 41 of the SNR document
 		    https://docushare.lsstcorp.org/docushare/dsweb/ImageStoreViewer/LSE-40 )
 		"""
-		sky_counts = self.calc_sky_noise()
+		sky_noise = self.neff*self.calc_sky_noise() * self.params.exptime
 		inst_noise_sq = self.calc_instr_noise_sq()
 
-		total_noise_sq = sky_counts + self.neff*inst_noise_sq
-		#print('total noise per frame, ', np.sqrt(total_noise_sq))
+		total_noise_sq = sky_noise + inst_noise_sq
 
 		return total_noise_sq
 
@@ -165,31 +169,33 @@ class PlanExposure:
 		total_noise_sq = self.calc_total_noise()
 
 		SNR = source_counts/np.sqrt(source_counts+total_noise_sq)
+
 		#print('total_noise', np.sqrt(total_noise_sq))
-
-
 		#print('Photons from object: ', source_counts/self.params.qe/self.params.exptime)
 		#print('Photons from sky: ', self.sky_rate_per_sqpixel/self.params.qe)
-
 
 		return source_counts, SNR
 
 
 	def plot_snr(self,mag_range):
 		snrlist = []
-		srclist = []
+		srcrate_list = []
 
 		for m in mag_range:
-			srccount, snr = self.calc_snr(m)
+			srccounts, snr = self.calc_snr(m)
 			snrlist.append(snr)
-			print(m, srccount/self.params.exptime)
+			srcrate_list.append(srccounts/self.params.exptime)
 
+		snrs= np.array(snrlist)
+		srcrates= np.array(srcrate_list)
 
-		plt.plot(mag_range,snrlist)
-		plt.xlabel('Magnitude')
-		plt.ylabel('SNR')
+		fig, ax1 = plt.subplots()
+		ax1.plot(mag_range, snrs)
+		ax1.set_xlabel('Magnitude')
+		ax1.set_ylabel('SNR')
+		ax1.tick_params(axis='y')
 
-		return np.array(mag_range), np.array(snrlist)
+		return mag_range, srcrates, snrs
 
 '''
 	def plot_exptime(self,mag_range):
