@@ -51,8 +51,6 @@ class PlanExposure:
 		return avg_num_pixels
 
 
-
-
 	def calc_instr_noise_sq(self):
 	    """
 	    Combine all of the noise due to intrumentation into one value
@@ -68,7 +66,7 @@ class PlanExposure:
 	    inst_noise_sq : `float`
 	        The noise due to all of these sources added in quadrature in ADU counts
 	    """
-	    # instrumental squared noise in units of electrons per pixel
+	    # instrumental squared noise
 	    inst_noise_sq =  self.neff* self.params.coadds * (self.params.read_noise**2) + (self.params.dark_current * self.params.exptime)
 
 	    return inst_noise_sq
@@ -110,40 +108,8 @@ class PlanExposure:
 
 	    return sky_rate_per_sqpixel
 
-	    # # Sky background counts
-	    # sky_counts = sky_rate_per_sqpixel * self.params.exptime
 
-	    # #print('K_dark sky per pixel', sky_counts/params.exptime)
-	    # self.sky_rate_per_sqpixel = sky_rate_per_sqpixel
-
-	    # return sky_counts
-
-
-	def calc_total_noise(self):
-		"""
-		Calculate the noise due to things that are not the source being observed
-		(i.e. intrumentation and sky background)
-
-		Parameters
-		----------
-
-
-		Returns
-		-------
-		sky_noise : `float`
-		    total non-source noise squared (in ADU counts)
-		    (this is simga^2_tot * neff in equation 41 of the SNR document
-		    https://docushare.lsstcorp.org/docushare/dsweb/ImageStoreViewer/LSE-40 )
-		"""
-		sky_noise = self.neff*self.calc_sky_noise() * self.params.exptime
-		inst_noise_sq = self.calc_instr_noise_sq()
-
-		total_noise_sq = sky_noise + inst_noise_sq
-
-		return total_noise_sq
-
-
-	def calc_src_counts(self,source_magnitude):
+	def calc_src_rate(self,source_magnitude):
 
 		# Brightness of Vega in units of ph/s/cm^2 at the top of the atmosphere
 		# This defines the zero-point
@@ -156,25 +122,24 @@ class PlanExposure:
 		zp_ondetector = transmitted_zp * self.params.qe
 
 		# Source count rate given source AB magnitude
-		source_count_rate = zp_ondetector/(10**(source_magnitude/2.512))
+		source_rate = zp_ondetector/(10**(source_magnitude/2.512))
 
-		# Total source counts
-		source_counts = source_count_rate*self.params.exptime
-
-		return source_counts
+		return source_rate
 
 
 	def calc_snr(self,source_magnitude):
-		source_counts = self.calc_src_counts(source_magnitude)
-		total_noise_sq = self.calc_total_noise()
+		source_rate = self.calc_src_rate(source_magnitude)
+		sky_rate = self.neff*self.calc_sky_noise()
+		instr_noise_sq = self.calc_instr_noise_sq()
 
-		SNR = source_counts/np.sqrt(source_counts+total_noise_sq)
+		source_counts = source_rate * self.params.exptime
+		sky_counts = sky_rate * self.params.exptime
 
-		#print('total_noise', np.sqrt(total_noise_sq))
-		#print('Photons from object: ', source_counts/self.params.qe/self.params.exptime)
-		#print('Photons from sky: ', self.sky_rate_per_sqpixel/self.params.qe)
+		SNR = source_counts/np.sqrt(source_counts+sky_counts+instr_noise_sq)
 
-		return source_counts, SNR
+		data = np.array([source_rate, sky_rate, instr_noise_sq])
+
+		return data, SNR
 
 
 	def plot_snr(self,mag_range):
@@ -182,9 +147,9 @@ class PlanExposure:
 		srcrate_list = []
 
 		for m in mag_range:
-			srccounts, snr = self.calc_snr(m)
+			data, snr = self.calc_snr(m)
 			snrlist.append(snr)
-			srcrate_list.append(srccounts/self.params.exptime)
+			srcrate_list.append(data[0])
 
 		snrs= np.array(snrlist)
 		srcrates= np.array(srcrate_list)
