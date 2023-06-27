@@ -143,6 +143,9 @@ class PlanExposure:
 
 
 	def plot_snr(self,mag_range):
+		'''
+		Plot SNR for a source of a given magnitude, given some predefined exposure time included in etc_param.txt
+		'''
 		snrlist = []
 		srcrate_list = []
 
@@ -159,22 +162,37 @@ class PlanExposure:
 		ax1.set_xlabel('Magnitude')
 		ax1.set_ylabel('SNR')
 		ax1.tick_params(axis='y')
+		ax1.set_yscale('log')
 
-		return mag_range, srcrates, snrs
-
-'''
-	def plot_exptime(self,mag_range):
-
-		something
-		something
-		something
-'''
+		return srcrates, snrs
 
 
-# for i, coadd in enumerate(coadds):
-#     print('Integration Time: ',s)
-#     print(snr(int_times[i],coadd))
-#     print('=======')
+	def plot_exptime(self,mag_range,snr_desired):
+		'''
+		Solve for exposure time needed to reach a given SNR 
+		'''
+		D = self.params.dark_current
+		R = self.neff*self.params.coadds*(self.params.read_noise**2) 
+		B = self.neff*self.calc_sky_noise()
+
+		times = []
+
+		for m in mag_range:
+			S = self.calc_src_rate(m)
+			# Solving quadratic: S**2 * texp**2 - snr_desired**2 * (S+B+D)*texp - (snr_desired**2+R) = 0
+			coeff = [S**2, -snr_desired**2 * (S+B+D), -(snr_desired**2+R)]
+			texp = np.roots(coeff)
+			times.append(texp[texp>0])
+
+
+		fig, ax1 = plt.subplots()
+		ax1.plot(mag_range, times)
+		ax1.set_xlabel('Magnitude')
+		ax1.set_ylabel('Required Time (s)')
+		ax1.tick_params(axis='y')
+		ax1.set_yscale('log')
+
+		return times
 
 
 
