@@ -1,0 +1,1625 @@
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Telescope magnitude SNR calculate</title>
+		<link rel="stylesheet" href="AST3.css">
+		<script type="text/javascript" src="http://cdn.hcharts.cn/jquery/jquery-1.8.3.min.js"></script>
+		<script type="text/javascript" src="http://cdn.hcharts.cn/highcharts/highcharts.js"></script>
+		<script type="text/javascript" src="http://cdn.hcharts.cn/highcharts/exporting.js"></script>
+		<script type="text/javascript">
+		
+			function BlackbodyRadiationFBB(T,start_wavelength,stop_wavelength)
+			{
+							
+							var h=6.6232*Math.pow(10,-34);//plank canstant unit w/s
+							var c=2.997925*Math.pow(10,8);//the velocity of the wavefront
+							var k=1.3806*Math.pow(10,-23);//the boltzmann constant ,unit w*s/k
+							var sigma=5.67*Math.pow(10,-14);//stefan-bolzmann constant unit w/mm^2k^4
+							start_wavelength=start_wavelength-0;
+							stop_wavelength=stop_wavelength-0;
+							var lamda;
+							lamda=(start_wavelength+stop_wavelength)*Math.pow(10,-6)/2;//convert wavelength unit from un to 
+							
+							var delta_lamda=Math.abs(start_wavelength-stop_wavelength)*Math.pow(10,-6);
+							var L=Math.PI*2*h*Math.pow(c,2)/(Math.pow(lamda,5)*Math.exp(h*c/(lamda*k*T))-1);//The spectral flux density w/m^2/m;
+							var SpectralIrradiance = L/Math.pow(10,10); //Convert energy unit from W/m^2.m to W/m^2*um
+							var FractionalEnergy=0;
+							
+							for (var lambda1=(lamda-delta_lamda/2);lambda1<(lamda+delta_lamda/2);lambda1=lambda1+0.000000001)  //0.0000000001(default; high precision)
+							{
+							FractionalEnergy=FractionalEnergy+Math.PI*2*h*Math.pow(c,2)/(((Math.pow(lambda1-0.0000000001,5)))*(Math.exp(h*c/((lambda1-0.0000000001)*k*T))-1))*0.0000000001*0.5+Math.PI*2*h*Math.pow(c,2)/(((Math.pow(lambda1+0.0000000001,5)))*(Math.exp(h*c/((lambda1+0.0000000001)*k*T))-1))*0.0000000001*0.5;
+							}
+							
+							TotalEnergy=0;
+							for (lambda1=0.0000000011;lambda1<0.0008;lambda1=lambda1+0.00000001)//0.000000001(default; high precision)
+                                                        {
+							TotalEnergy=TotalEnergy+Math.PI*2*h*Math.pow(c,2)/(((Math.pow(lambda1-0.000000001,5)))*(Math.exp(h*c/((lambda1-0.000000001)*k*T))-1))*0.000000001*0.5+Math.PI*2*h*Math.pow(c,2)/(((Math.pow(lambda1+0.000000001,5)))*(Math.exp(h*c/((lambda1+0.000000001)*k*T))-1))*0.000000001*0.5;
+							}
+							FBB = FractionalEnergy/TotalEnergy;	
+							return FBB;
+			}
+		
+			function FredSolidAngleIRChamber(AmbientTemp,ChamberTemp,start_wavelength,stop_wavelength)
+				{
+							
+											var temperature_table=[206,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	107,
+																	107,
+																	107,
+																	107,
+																	107,
+																	107,
+																	107,
+																	107,
+																	107,
+																	107,
+																	77,
+																	77,
+																	77,
+																	77,
+																	77,
+																	77,
+																	203,
+																	107,
+																	107,
+																	107,
+																	107,
+																	107,
+																	107,
+																	107,
+																	107,
+																	107,
+																	203,
+																	107,
+																	107,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	203,
+																	107,
+																	107,
+																	107,
+																	107,
+																	203,
+																	203,
+																	203,
+																	107,
+																	77,
+																	77,
+																	107,
+																	107,
+																	107,
+																	107,
+																	107,
+																	107,
+																	107,
+																	107,
+																	107,
+																	107,
+																	107,
+																	107,
+																	107,
+																	107,
+																	107,
+																	203,
+																	203,
+																	203];
+															
+												var emissity_table=[0.13,
+																	0.03,
+																	0.03,
+																	0.95,
+																	0.95,
+																	0.09,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.09,
+																	0.09,
+																	0.95,
+																	0.95,
+																	0.09,
+																	0.09,
+																	0.95,
+																	0.95,
+																	0.09,
+																	0.09,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.09,
+																	0.09,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.09,
+																	0.09,
+																	0.95,
+																	0.95,
+																	0.09,
+																	0.09,
+																	0.09,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95,
+																	0.95];
+														var GCF_table=[
+																		0.004493606,
+																		0.008246501,
+																		0.006797033,
+																		5.36399E-06,
+																		6.94106E-06,
+																		0.004576016,
+																		9.57428E-10,
+																		1.60083E-09,
+																		1.09397E-08,
+																		5.21197E-09,
+																		0.007284341,
+																		0.007401926,
+																		5.71915E-07,
+																		4.90308E-07,
+																		0.007521418,
+																		0.007642416,
+																		9.16364E-08,
+																		7.482E-07,
+																		0.007769082,
+																		0.00789412,
+																		0.000875651,
+																		0.002407806,
+																		0.005185295,
+																		4.47636E-06,
+																		0.40413224,
+																		0.393251644,
+																		1.45935E-09,
+																		0.002982301,
+																		0.003772932,
+																		0.043764122,
+																		0.039295079,
+																		0.021160645,
+																		1.56656E-06,
+																		6.41489E-06,
+																		0.008341018,
+																		0.008024568,
+																		1.79989E-08,
+																		1.18764E-06,
+																		6.03389E-08,
+																		5.43434E-10,
+																		1.14359E-08,
+																		1.9219E-08,
+																		2.50406E-08,
+																		1.97968E-08,
+																		1.20821E-08,
+																		2.02687E-08,
+																		1.03663E-08,
+																		1.40125E-08,
+																		1.29545E-08,
+																		5.32471E-09,
+																		1.41075E-09,
+																		7.50262E-09,
+																		1.47888E-08,
+																		1.39434E-08,
+																		1.52638E-08,
+																		1.77219E-08,
+																		2.1833E-09,
+																		9.82879E-09,
+																		1.08537E-09,
+																		7.53397E-09,
+																		1.25176E-07,
+																		6.22487E-09,
+																		8.5959E-09,
+																		3.95667E-08,
+																		7.92881E-09,
+																		1.25455E-08,
+																		8.17247E-09,
+																		1.56555E-08,
+																		6.63397E-09,
+																		1.18392E-09,
+																		1.83983E-08,
+																		8.04697E-09,
+																		6.48443E-10,
+																		8.46852E-09,
+																		1.96714E-08,
+																		1.20497E-08,
+																		7.06702E-10,
+																		5.9356E-09,
+																		5.70581E-09,
+																		9.28483E-10,
+																		2.32801E-07,
+																		2.50089E-08,
+																		7.15915E-10,
+																		7.61062E-09,
+																		1.40664E-08,
+																		2.03189E-08,
+																		5.4119E-07,
+																		1.15798E-07,
+																		2.2356E-07,
+																		7.21365E-07,
+																		3.3373E-08,
+																		1.33392E-08,
+																		3.7384E-05,
+																		6.90292E-09,
+																		6.84468E-09,
+																		3.0689E-08,
+																		5.21445E-10,
+																		2.96043E-09,
+																		2.75056E-09,
+																		4.3402E-08,
+																		8.41815E-07,
+																		7.19582E-09,
+																		9.68861E-10,
+																		3.69297E-09,
+																		5.56329E-09,
+																		1.60216E-08,
+																		4.4251E-08,
+																		3.32792E-08,
+																		3.66921E-08,
+																		4.83307E-09,
+																		2.26191E-09,
+																		9.38343E-10,
+																		1.7337E-08,
+																		6.22564E-06,
+																		6.53291E-08,
+																		8.26223E-09,
+																		2.17776E-05,
+																		4.26437E-09,
+																		7.00134E-09,
+																		5.99138E-09,
+																		1.32102E-09,
+																		3.08735E-09,
+																		1.41094E-09,
+																		6.1343E-08,
+																		3.64869E-09,
+																		1.10506E-08,
+																		1.20893E-08,
+																		1.54895E-08,
+																		1.39703E-09,
+																		5.55857E-09,
+																		9.34321E-06,
+																		3.89835E-08,
+																		1.72106E-09,
+																		5.64183E-09,
+																		1.92166E-08,
+																		2.48914E-05,
+																		1.70307E-09,
+																		5.2281E-08,
+																		5.17934E-09,
+																		8.62785E-09,
+																		6.12206E-09,
+																		1.66919E-08,
+																		2.16787E-07,
+																		4.99074E-08,
+																		2.05085E-08,
+																		2.90373E-09,
+																		5.72244E-08,
+																		3.11475E-06,
+																		2.48886E-09,
+																		9.34532E-06,
+																		3.7046E-09,
+																		7.43331E-08,
+																		1.65009E-09,
+																		3.99877E-08,
+																		6.75578E-08,
+																		1.40673E-08,
+																		4.58658E-08,
+																		1.21781E-07,
+																		0.000343409,
+																		3.14408E-06,
+																		4.99982E-05,
+																		2.44265E-07,
+																		6.71026E-05,
+																		2.5179E-05,
+																		8.53122E-05,
+																		3.03063E-07,
+																		4.69157E-05,
+																		7.10363E-08,
+																		5.82914E-08,
+																		1.43895E-06,
+																		2.22604E-07,
+																		2.14201E-07,
+																		5.76845E-07,
+																		9.74537E-09,
+																		1.26167E-08,
+																		3.64508E-07,
+																		2.83644E-08,
+																		5.51585E-08,
+																		1.65954E-07,
+																		9.77241E-09,
+																		3.60558E-07,
+																		3.5702E-07,
+																		1.10345E-06,
+																		1.40021E-07,
+																		4.15837E-07,
+																		3.30215E-07,
+																		1.58534E-07,
+																		8.04712E-07,
+																		6.76808E-08,
+																		3.62661E-07,
+																		2.60532E-08,
+																		5.77517E-08,
+																		1.77876E-08,
+																		1.1852E-08,
+																		7.08795E-08,
+																		1.14882E-08,
+																		1.2871E-08,
+																		4.06111E-08,
+																		3.49353E-09,
+																		6.69315E-09,
+																		9.20828E-08,
+																		9.44757E-09,
+																		2.9179E-09,
+																		2.01058E-07,
+																		2.69721E-08,
+																		2.15778E-07,
+																		3.88799E-08,
+																		3.13172E-07,
+																		9.32827E-07,
+																		1.01885E-06,
+																		9.10285E-07,
+																		5.50844E-07,
+																		2.06387E-07,
+																		6.41478E-06,
+																		1.81419E-05,
+																		2.19715E-07,
+																		5.48381E-07,
+																		6.96126E-08,
+																		4.8371E-08,
+																		6.87695E-08,
+																		6.01702E-08,
+																		2.48764E-07,
+																		2.52543E-08,
+																		8.79563E-08,
+																		9.1514E-09,
+																		3.31631E-08,
+																		8.42228E-08,
+																		1.97363E-08,
+																		9.64528E-09,
+																		4.75091E-08,
+																		1.63858E-08,
+																		1.66497E-08,
+																		9.35407E-08,
+																		1.53511E-08,
+																		7.94463E-09,
+																		6.33648E-08,
+																		2.1998E-08,
+																		1.10349E-08,
+																		2.63147E-07,
+																		5.37126E-08,
+																		8.60898E-09,
+																		1.5541E-07,
+																		4.87873E-09,
+																		2.4469E-08,
+																		2.45343E-07,
+																		1.27777E-09,
+																		1.23201E-08,
+																		2.68957E-09,
+																		7.22463E-08,
+																		2.1182E-08,
+																		3.51752E-07,
+																		5.65661E-05,
+																		1.85731E-07,
+																		0.000128795,
+																		7.56829E-07,
+																		2.44667E-06,
+																		5.74492E-09,
+																		1.91998E-08,
+																		2.4038E-08,
+																		1.81849E-09,
+																		3.69192E-09,
+																		4.65781E-09,
+																		3.50023E-09,
+																		7.27484E-09,
+																		1.01004E-09,
+																		7.41847E-09,
+																		1.00191E-09,
+																		3.70107E-09,
+																		5.89357E-10,
+																		8.97094E-09,
+																		8.52579E-09,
+																		1.41771E-09,
+																		2.31549E-09,
+																		5.03015E-10,
+																		6.43306E-09,
+																		1.98581E-09,
+																		2.77618E-09,
+																		2.72259E-07,
+																		3.33684E-08,
+																		2.41719E-08,
+																		4.04019E-09,
+																		1.1571E-08,
+																		5.24231E-09,
+																		2.22393E-09,
+																		1.65222E-09,
+																		7.37492E-10,
+																		1.64932E-08,
+																		4.80127E-10,
+																		1.25136E-09,
+																		3.62639E-08,
+																		2.81346E-09,
+																		7.10276E-09,
+																		1.1117E-09,
+																		1.15161E-09,
+																		1.20449E-08,
+																		8.70871E-09,
+																		5.38479E-09,
+																		1.08487E-09,
+																		4.37384E-09,
+																		2.45242E-08,
+																		2.98846E-08,
+																		6.76509E-10,
+																		2.07871E-09,
+																		2.40758E-09,
+																		3.32183E-09,
+																		1.83735E-09,
+																		5.95602E-09,
+																		3.37384E-09,
+																		2.63572E-09,
+																		1.30966E-08,
+																		1.63263E-08,
+																		1.37253E-09,
+																		2.36592E-09,
+																		7.53121E-09,
+																		2.26418E-08,
+																		6.43722E-08,
+																		2.35578E-08,
+																		1.43579E-09,
+																		1.1683E-08,
+																		1.73536E-08,
+																		4.67432E-09,
+																		7.80804E-10,
+																		1.41583E-08,
+																		1.2918E-09,
+																		1.1973E-08,
+																		1.48864E-08,
+																		4.67836E-09,
+																		3.16182E-09,
+																		1.4768E-08,
+																		2.10327E-08,
+																		6.38952E-09,
+																		1.21536E-09,
+																		6.50007E-09,
+																		5.31586E-08,
+																		2.55501E-08,
+																		3.29788E-09,
+																		1.30414E-08,
+																		1.01606E-08,
+																		1.56362E-09,
+																		9.93606E-06,
+																		0.000116196,
+																		1.39941E-05,
+																		0.278904919,
+																		0.009836413,
+																		5.3261E-05,
+																		1.30696E-06,
+																		5.43787E-08,
+																		0.000572431,
+																		0.051390582,
+																		0.000522264,
+																		0.000194394,
+																		1.61346E-07,
+																		2.96307E-06,
+																		2.70133E-07,
+																		1.37235E-08,
+																		4.84833E-08,
+																		7.02918E-08,
+																		1.56163E-06,
+																		2.75519E-06,
+																		1.65528E-05,
+																		0.010314441,
+																		0.000645659,
+																		3.60105E-06,
+																		0.005830791,
+																		2.81395E-05,
+																		0.003617517,
+																		2.05627E-06,
+																		1.35078E-05,
+																		0.000137868
+																		];
+															
+										var sigma=5.67*Math.pow(10,-14);
+										var totalTSE=0;
+										var  datalength=GCF_table.length;
+										var irradiance=0;
+										var FBB=0;
+													for (var i=0;i<datalength-1;i=i+1)
+													{
+														if(AmbientTemp==0)
+														{
+														break;
+														}
+														
+														else if (temperature_table[i]==203)
+															{
+															temperature_table[i]=AmbientTemp;
+															}
+															else if (temperature_table[i]==107)
+															{
+															temperature_table[i]=ChamberTemp;
+															}
+														else if (temperature_table[i]>203)
+															{
+															temperature_table[i]=AmbientTemp+3;
+															}
+														else 
+															{
+															temperature_table[i]=77;
+															}
+												
+														FBB=BlackbodyRadiationFBB(temperature_table[i],start_wavelength, stop_wavelength);
+														irradiance= sigma*Math.pow(temperature_table[i],4)*emissity_table[i]*GCF_table[i]*FBB;
+														totalTSE= totalTSE + irradiance;
+													}
+												
+											
+										return totalTSE;
+			}
+			
+		
+			function SNR_EXPOSURE_CALCULATOR()
+			{
+				
+					var Object_magnitude=document.getElementById('Object_magnitude').value-0;
+					var Observation_Wavelength=document.getElementById('Observation_Wavelength').value-0;
+					var pixel_size=document.getElementById('pixel_size').value-0;
+					var Dark_current=document.getElementById('Dark_current').value-0;
+					var Read_noise=document.getElementById('Read_noise').value-0;
+					var Quantum_efficiency=document.getElementById('Quantum_efficiency').value-0;
+					var Full_Well_Depth=document.getElementById('Full_Well_Depth').value-0;
+					var SNR_Given=document.getElementById('SNR_Given').value-0;
+					var Given_Exposure_times=document.getElementById('Given_Exposure_times').value-0;
+					var MAX_Exposure_times=document.getElementById('MAX_Exposure_times').value-0;
+					var seeing=document.getElementById('seeing').value-0;
+					var sky_background=document.getElementById('sky_background').value-0;
+					var start_wavelength=document.getElementById('start_wavelength').value-0;
+					var stop_wavelength=document.getElementById('stop_wavelength').value-0;
+					var ambient_temperature=document.getElementById('ambient_temperature').value-0;
+					var Zenith_distance=document.getElementById('Zenith_distance').value-0;
+					Zenith_distance=Zenith_distance*Math.PI/180-0;
+					ThetaSeeing = seeing*Math.pow(Observation_Wavelength/0.55,-1/5)*(1/Math.cos(Zenith_distance))-0;
+					var Flux0=[4.35000000000000e-12,7.20000000000000e-12,3.92000000000000e-12,1.76000000000000e-12,1.20000000000000e-12,2.90000000000000e-13,1.08000000000000e-13,3.80000000000000e-14,6.90000000000000e-15,2.00000000000000e-15,1.09000000000000e-16];
+					var Wavelength=[0.360000000000000,0.430000000000000,0.540000000000000,0.700000000000000,0.800000000000000,1.25000000000000,1.65000000000000,2.20000000000000,3.50000000000000,4.80000000000000,9.10000000000000];
+						if (Observation_Wavelength<Wavelength[2]&&Observation_Wavelength>=Wavelength[1])
+						{
+						FluxVeg=Flux0[1];
+						}
+						else if (Observation_Wavelength<Wavelength[3]&&Observation_Wavelength>=Wavelength[2])
+						{
+						FluxVeg=Flux0[2];
+						}
+						else if (Observation_Wavelength<Wavelength[4]&&Observation_Wavelength>=Wavelength[3])
+						{
+						FluxVeg=Flux0[3];
+						}
+						else if (Observation_Wavelength<Wavelength[5]&&Observation_Wavelength>=Wavelength[4])
+						{
+						FluxVeg=Flux0[4];
+						}
+						else if (Observation_Wavelength<Wavelength[6]&&Observation_Wavelength>=Wavelength[5])
+						{
+						FluxVeg=Flux0[5];
+						}
+						else if (Observation_Wavelength<Wavelength[7]&&Observation_Wavelength>=Wavelength[6])
+						{
+						FluxVeg=Flux0[6];
+						}
+						else if (Observation_Wavelength<Wavelength[8]&&Observation_Wavelength>=Wavelength[7])
+						{
+						FluxVeg=Flux0[7];
+						}
+						else if (Observation_Wavelength<Wavelength[9]&&Observation_Wavelength>=Wavelength[8])
+						{
+						FluxVeg=Flux0[8];
+						}
+						else if (Observation_Wavelength<Wavelength[10]&&Observation_Wavelength>=Wavelength[9])
+						{
+						FluxVeg=Flux0[9];
+						}
+						else if (Observation_Wavelength<Wavelength[11]&&Observation_Wavelength>=Wavelength[10])
+						{
+						FluxVeg=Flux0[10];
+						}
+						else 
+						{
+						FluxVeg=Flux0[11];
+						}
+						if  (sky_background_unit.value=="Mag")
+						{
+						Msky=sky_background-2.5*Math.log(1/Math.cos(Zenith_distance))/Math.LN10;
+						}
+						else{
+						Msky =-2.5*Math.log(sky_background*3*Math.pow(10,-16)*(1/Math.cos(Zenith_distance))/(Math.pow(Observation_Wavelength,2)*FluxVeg))/Math.LN10;
+						}
+
+					totalTSE=FredSolidAngleIRChamber(ambient_temperature,150,start_wavelength,stop_wavelength);	
+					var     Delta_Lambda=Math.abs(start_wavelength-stop_wavelength);
+					var	G = 1;              //Gain of camera, unbinned. unit:e-
+					var	AD =16;             // A/D converter  16 bits
+					var	Latitude  = 80.367;        //Dome A altitude: degree
+					var	Longitude = 77.539;       //Dome A longitude: degree
+					var	Elevation = 4093;         //Dome A elevation: m
+					var	D_tel = 50;         // Telescope diamter, unit:cm
+					var	D_second = 22.6;      // Diameter of AST3 Secondary mirror. unit:cm
+                                        var	FNumber = 5.5;      //AAO IR Camera Preliminary Design;According to RC Design1,5.36;5.5 is the average over FOV; 
+					var	FocalLength = D_tel*10 * FNumber;   //AAO IR Camera Preliminary Design,According to RC Design1;unit:mm; 
+					var	R_Mirror = 0.956;     //AST3-3 mirror reflectance at 2.4um(Replace with the reflectance spectral response). Protected Aluminum coating
+					var	T_window = 0.984;     //AST3-3 lens transmission(Replce with transmission spetral response)
+					var	T_ITO = 0.85;          //AST3-3 ITO transmission
+					var	T_ARcoating = 0.995;   //Anti_reflective coating for K band lens and windows
+					var	T_Lens  = 0.999;      //Internal transmission for IR graded fused silica and ZnSe_100300K
+					var	N_Lens = 4;           //AAO IR Camera Preliminary design
+					var	N_OpticalParts = 6 ;   //number of optical parts in the imaging optics before filter
+					var	Transmission_Telescope = Math.pow(R_Mirror,2)*T_window*T_ITO*T_ARcoating;
+					var	Transmission_ImagingOptics = T_window*Math.pow(T_Lens,(N_Lens))*Math.pow(T_ARcoating,(N_OpticalParts*2));   //AAO IR Camera Preliminary design
+					var	Transmission_optics = Transmission_Telescope * Transmission_ImagingOptics;
+					var	T_Filter = 0.95;          //Transmission of T_Filter coating(replaced with transmission spetrum of the filter)
+					var	h = 6.63*Math.pow(10,-34);    //Plank constant
+					var	c  = 3*Math.pow(10,8);          //speed of light
+					var	hc = h*c; //Plank constant times speed of light. Constant. Unit :J*micron
+					var	Atel = Math.PI*Math.pow((D_tel/2),2) - Math.PI*Math.pow((D_second/2),2); //Effective area of AAT telescope. unit:cm^2
+					var	Plate_Scale = 206265/FocalLength;  //Telescope plate scale.unit:arcsecond/mm;
+					var	Theta_Pixel = Plate_Scale*pixel_size/1000;  //Angular resolution of the pixel on H2RG camrea. unit:arcsecond/pixel
+					var	Airy_disk = Observation_Wavelength*Math.pow(10,-6)*206265/(D_tel*Math.pow(10,-2));   //Not airy disk but a Diffraction limited image size of the telescope at Lambda
+                                        var     ImageSize = Math.sqrt(Math.pow(ThetaSeeing,2) + Math.pow(Airy_disk,2)+Math.pow(0.68,2));  //Image size considering of seeing.0.68 is the image size tolerance
+                                        var     ImageAperture = 2.35* ImageSize;    // Aperture size to capture the object image on ccd.
+                                        var     Num_Pixel = ImageAperture/Theta_Pixel;
+                                        var     RoundDiff = Num_Pixel - Math.round(Num_Pixel); //Find the remainder of the division
+                                    
+
+					
+					if (Num_Pixel < 2.5)
+							{ 
+							Npix = Math.pow(3,2)*Math.PI/4;}       //Minimum sampling aperture in pixels
+					else if(RoundDiff> 0)
+                                                       {
+                                                        Npix = (Math.pow((Math.round(ImageAperture /Theta_Pixel)+1),2)*Math.PI/4);} //Number of pixels for the seeing disk
+                                        else{
+					                Npix = (Math.pow((Math.round(ImageAperture /Theta_Pixel)),2)*Math.PI/4);} //Number of pixels for the seeing disk
+					
+                                        if (Given_Exposure_times <=2)
+                                                       {Read_noise = 18;}    //CDS read out. when exposure time <2s, Rn =18.
+                                        else{
+                                                      Read_noise = 3;} //Fowler read out mode.
+                                        
+					
+					F0= FluxVeg;  //Unit of F0: unit:W*cm^-2*micron^2;
+					B = F0*Math.pow(10,(-0.4*Msky))* Atel*Delta_Lambda*Math.pow(Theta_Pixel,2)* Transmission_optics*Quantum_efficiency*Math.pow((hc),-1) * Observation_Wavelength*Math.pow(10,-6); //Detected background noise rate. unit:e-/second
+					Thermal= totalTSE*Math.pow(pixel_size/1000,2)*Observation_Wavelength*Math.pow(10,-6)*Math.pow(hc,-1)*Quantum_efficiency;   //Detected thermal noise rate. unit:e-/second
+					ThermalMag  = -2.5*Math.log((totalTSE*Math.pow(10,-2)/Delta_Lambda)/F0)/Math.LN10;   //(TSE/0.1): Spectral irradiance from Thermal; 0.1 is the bandwidth of the obeservation.It is also the simulation results from Fred.					 
+					S = F0 *Math.pow(10,(-0.4*Object_magnitude))*Delta_Lambda *Atel*Transmission_optics*Quantum_efficiency*Observation_Wavelength*Math.pow(10,-6)*Math.pow((hc),-1) ; //Detected signal rate. unit:e_/second  
+					Noise_read = Math.sqrt(Math.pow(Read_noise,2)/Given_Exposure_times);   //read noise
+					Noise_dark = Math.sqrt(Dark_current*Npix *Given_Exposure_times);  // dark noise
+					Noise_shot = Math.sqrt(S*Given_Exposure_times);        //shot noise in source
+					Noise_Background = Math.sqrt(B*Given_Exposure_times);  // Sky background noise
+					maxT = (0.5*Full_Well_Depth - Math.pow(Read_noise,2)) /(S/Npix + B + Thermal+Dark_current); //calculate the maximum allowed integration time of T to half well depth
+					SN_NoThermal = S*Given_Exposure_times/Math.sqrt(S*Given_Exposure_times + Npix*Dark_current*Given_Exposure_times+(B*Given_Exposure_times*Npix)+ Npix*Math.pow(Read_noise,2));
+					SN = S*Given_Exposure_times/Math.sqrt(S*Given_Exposure_times + Npix*Dark_current*Given_Exposure_times+(B*Given_Exposure_times*Npix)+(Thermal*Given_Exposure_times*Npix)+ Npix*Math.pow(Read_noise,2));
+					a = Math.pow(S,2);
+					b = -Math.pow(SNR_Given,2)*(S + Npix*Dark_current +B*Npix + Thermal*Npix);
+					c = -Math.pow(SNR_Given,2)*Npix *Math.pow(Read_noise,2);
+					T_sn = (-b+Math.sqrt(Math.pow(b,2)-4*a*c))/(2*a);
+					document.getElementById("photons_from_object").value=S.toFixed(3);
+					document.getElementById("photons_from_sky").value=B.toFixed(3);
+					document.getElementById("photons_from_telescope_thermal").value=Thermal.toFixed(3);
+					document.getElementById("SNR").value=SN.toFixed(3);
+					document.getElementById("exposure_times").value=T_sn.toFixed(3);
+					document.getElementById("MAX_Exposure_times").value=maxT.toFixed(3);
+					if (T_sn>maxT)
+					{alert("The ccd is over half full well depth!Be careful!")};
+					
+					
+					var Object_magnitude_arry=[0,0,0,0,0,0,0,0,0];
+					var Noise_read_arry=[0,0,0,0,0,0,0,0,0];
+					var Noise_dark_arry=[0,0,0,0,0,0,0,0,0];
+					var Noise_shot_arry=[0,0,0,0,0,0,0,0,0];
+					var Noise_Background_arry=[0,0,0,0,0,0,0,0,0];
+					var maxT_arry=[0,0,0,0,0,0,0,0,0];
+					
+					var S_arry=[0,0,0,0,0,0,0,0,0];
+					var SN_NoThermal_arry=[0,0,0,0,0,0,0,0,0];
+					var a_arry=[0,0,0,0,0,0,0,0,0];
+					var b_arry=[0,0,0,0,0,0,0,0,0];
+					var c_arry=[0,0,0,0,0,0,0,0,0];
+					var T_sn_arry=[0,0,0,0,0,0,0,0,0];
+					var SN_arry=[0,0,0,0,0,0,0,0,0]
+					
+					for (var arry=12;arry<21;arry=arry+1)
+					{
+					Object_magnitude_arry[arry-12]=arry;
+					S_arry[arry-12]= F0 *Math.pow(10,(-0.4*Object_magnitude_arry[arry-12]))*Delta_Lambda *Atel*Transmission_optics*Quantum_efficiency*Observation_Wavelength*Math.pow(10,-6)*Math.pow((hc),-1) ; //Detected signal rate. unit:e_/second  
+					Noise_read_arry[arry-12]= Math.sqrt(Math.pow(Read_noise,2)/Given_Exposure_times);   //read noise
+					Noise_dark_arry[arry-12]= Math.sqrt(Dark_current*Npix *Given_Exposure_times);  // dark noise
+					Noise_shot_arry[arry-12] = Math.sqrt(S_arry[arry-12]*Given_Exposure_times);        //shot noise in source
+					Noise_Background_arry[arry-12]= Math.sqrt(B*Given_Exposure_times);  // Sky background noise
+					maxT_arry[arry-12] = 0.5* Full_Well_Depth /(S_arry[arry-12]/4 + B + Thermal); //calculate the maximum allowed integration time of T to half full well depth
+					SN_NoThermal_arry[arry-12] = S_arry[arry-12]*Given_Exposure_times/Math.sqrt(S_arry[arry-12]*Given_Exposure_times + Npix*Dark_current*Given_Exposure_times+(B*Given_Exposure_times*Npix)+ Npix*Math.pow(Read_noise,2));
+					SN_arry[arry-12] = S_arry[arry-12]*Given_Exposure_times/Math.sqrt(S_arry[arry-12]*Given_Exposure_times + Npix*Dark_current*Given_Exposure_times+(B*Given_Exposure_times*Npix)+(Thermal*Given_Exposure_times*Npix)+ Npix*Math.pow(Read_noise,2));
+					a_arry[arry-12] = Math.pow(S_arry[arry-12],2);
+					b_arry[arry-12] = -Math.pow(SNR_Given,2)*(S_arry[arry-12] + Npix*Dark_current +B*Npix + Thermal*Npix);
+					c_arry[arry-12] = -Math.pow(SNR_Given,2)*Npix *Math.pow(Read_noise,2);
+					T_sn_arry[arry-12] = (-b_arry[arry-12]+Math.sqrt(Math.pow(b_arry[arry-12],2)-4*a_arry[arry-12]*c_arry[arry-12]))/(2*a_arry[arry-12]);
+					
+					}
+					SNR_MAG(SN_arry,Given_Exposure_times,ambient_temperature,Zenith_distance);
+					Exposuretime_MAG(T_sn_arry,SNR_Given,ambient_temperature,Zenith_distance);
+				
+							
+
+			}
+			
+			 function SNR_MAG(SN_arry,Given_Exposure_times,ambient_temperature,Zenith_distance) {
+						$('#SNR_MAG_plot').highcharts({
+							title: {
+								text: 'SNR VS magnitude of star,observation time:'+Given_Exposure_times+'s, ambient temp:'+ambient_temperature+'K, zenith:'+Zenith_distance+' deg',
+								x: -15 //center
+							},
+							subtitle: {
+								text: 'Source: AST3-3 IR Camera',
+								x: -20
+							},
+							xAxis: {
+									  title: {
+									text: 'Magnitude of object'
+								},
+								categories: [12,13,14,15,16,17,18,19,20]
+							},
+							yAxis: {
+								title: {
+									text: 'Signal to noise ratio'
+								},
+								plotLines: [{
+									value: 0,
+									width: 1,
+									color: '#808080'
+								}]
+							},
+											
+							series: [{
+								name: 'SNR',
+								data: SN_arry
+							}, 
+							]
+						});
+					};
+			
+			
+			 function Exposuretime_MAG(T_sn_arry,SNR_Given,ambient_temperature,Zenith_distance) 
+			 {
+						$('#Exposuretime_MAG_plot').highcharts({
+							title: {
+								text: 'Exposure time VS magnitude of star,SNR:'+SNR_Given+', ambient temp:'+ambient_temperature+'K, zenith:'+Zenith_distance+' deg',
+								x: -15 //center
+							},
+							subtitle: {
+								text: 'Source: AST3-3 IR Camera',
+								x: -20
+							},
+							xAxis: {
+									  title: {
+									text: 'Magnitude of object'
+								},
+								categories: [12,13,14,15,16,17,18,19,20]
+							},
+							yAxis: {
+								title: {
+									text: 'Exposure times(s)'
+								},
+								plotLines: [{
+									value: 0,
+									width: 1,
+									color: 'red',
+								}]
+							},
+						
+							series: [{
+								name: 'Exposure times',
+								data: T_sn_arry
+							}, 
+							]
+						});
+					};
+			
+			
+			
+			
+			
+		
+			
+		</script>
+		
+	</head>
+	
+	<body>
+		<div class="container">
+			<section class="in_put_container">
+				
+					<header>
+						<h2 class="title1"> KISS Camera Exposure Time Calculator</h2>
+					</header>
+				<div>
+					<form action="" method="get">
+						<fieldset class="Target_flux_distribution">
+						<legend> Target flux distribution:</legend>
+						<p>
+							<label for="Object_magnitude">Object magnitude:</label><input type="text" name="Object magnitude" id="Object_magnitude" value="18.5"><br/>
+						</p>
+						<p>
+							<label for="Observation_Wavelength">Observation Wavelength(um):</label><input type="text" name="Observation_Wavelength" id="Observation_Wavelength" value="2.375"><br/>
+						</p>
+					</form>
+				</div>
+				<div>
+							<form action=" "  method="get" >
+							<fieldset class="Target_geometory">
+							<legend> Target geometory:</legend>
+							Target geometory
+							<select name="geometory">
+								<option value="potato_chips">Point source</option>
+							//	<option value="Popcorn">extended source</option>
+							</select>
+							</form>
+				</div>
+				<div>
+					<form action="" method="get">
+							<fieldset class="CCD_parameter">
+							<legend> CCD parameters:</legend>
+							<p>
+								<label for="pixel_size">Pixel size(um):</label><input type="text" name="pixel_size" id="pixel_size" value="18"><br/>
+							</p>
+							<p>
+								<label for="Dark_current">Dark current(e^-1/s):</label><input type="text" name="Dark_current" id="Dark_current" value="1"><br/>
+							</p>
+							<p>
+								<label for="Read_noise">Read noise(e^-1/s):</label><input type="text" name="Read_noise" id="Read_noise" value="3"><br/>
+							</p>
+							<p>
+								<label for="Quantum_efficiency">Quantum_efficiency:</label><input type="text" name="Quantum_efficiency" id="Quantum_efficiency" value="0.7"><br/>
+							</p>
+							<p>
+								<label for="Full_Well_Depth">Full Well Depth:</label><input type="text" name="Full_Well_Depth" id="Full_Well_Depth"  value="80000"><br/>
+							</p>
+								
+							<p>
+								<label for="SNR_Given">SNR(defined by user):</label><input type="text" name="SNR_Given" id="SNR_Given" value="10"><br/>
+							</p>
+							<p>
+								<label for="Given_Exposure_times">Exposure time(s,defined by user):</label><input type="text" name="Given_Exposure_times" id="Given_Exposure_times" value="300"><br/>
+							</p>	
+						
+							
+					
+					</form>
+				</div>
+				<div>
+					<form action="" method="get">
+							<fieldset class="Sky_condition">
+							<legend> Sky conditions:</legend>
+							<p>
+								<label for="seeing">Seeing(arcsec):</label><input type="text" name="seeing" id="seeing" value="0.5"><br/>
+							</p>	
+							<p>
+								<label for="sky_background">Sky background
+								<form action=" "  method="get" >
+								<select name="sky_background_unit" id="sky_background_unit">
+								<option value="Mag">Mag</option>
+								<option value="Jy">Jy</option>
+								</select>
+								</form>
+								:</label><input type="text" name="sky_background" id="sky_background" value=16.89><br/>
+								
+							</p>
+					</form>
+				</div>
+				<div>
+					<form action=" " method="get">
+							<fieldset class="Instrument_setup">
+							<legend>Instrument setup:</legend>
+							<p>
+								<label for="start_wavelength">Start wavelength(um):</label><input type="text" name="start_wavelength" id="start_wavelength" value="2.25"><br/>
+							</p>
+							<p>
+								<label for="stop_wavelength">Stop wavelength(um):</label><input type="text" name="stop_wavelength" id="stop_wavelength" value="2.5"><br/>
+							</p>
+							<p>
+								<label for="ambient_temperature">Ambient temperature(k):</label><input type="text" name="ambient_temperature" id="ambient_temperature" value="200"><br/>
+							</p>
+							<p>
+								<label for="Zenith_distance">Zenith distance(degree):</label><input type="text" name="Zenith_distance" id="Zenith_distance" value="0"><br/>
+							</p>
+					</form>
+				</div>
+			</section>
+			
+				<div class="clear">
+				</div>
+				
+				
+				<div class="output_container">
+					<section class="output">
+							<header>
+								<h2 class="title2">Calculation results</h2>
+							</header>
+							<form action="" method="get">
+								<fieldset class="Calculation_result">
+								<legend> Results:</legend>
+								<p>
+									<input type="button" value="Calculate" onclick="SNR_EXPOSURE_CALCULATOR()">
+								</p>
+							
+							
+								<p>
+									<label for="photons_from_object">Photons from object(/s):</label><input type="text" name="photons_from_object" id="photons_from_object"><br/>
+								</p>
+								<p>
+									<label for="photons_from_sky">Photons from sky(/px/s):</label><input type="text" name="photons_from_sky" id="photons_from_sky"><br/>
+								</p>	
+								<p>
+									<label for="photons_from_telescope_thermal">Photons from thermal(/px/s):</label><input type="text" name="photons_from_sky" id="photons_from_telescope_thermal"><br/>
+								</p>
+								<p>
+									<label for="exposure_time">Exposure time(s, At Given SNR):</label><input type="text" name="exposure_time" id="exposure_times"><br/>
+								</p>
+								<p>
+									<label for="SNR">SNR(At Given Exposure Time):</label><input type="text" name="SNR" id="SNR"><br/>
+								</p>
+								<p>
+									<label for="MAX_Exposure_times">Max exposure time(s, Half of Full well depth):</label><input type="text" name="MAX_Exposure_times" id="MAX_Exposure_times"><br/>
+								</p>
+							</form>
+					</section>
+				</div>
+				
+				
+				<aside class="right_side_plot1">
+				<div id="SNR_MAG_plot" style="min-width:475px;height:375px"></div>
+				</aside>
+				
+				<aside class="right_side_plot2">	
+				<div id="Exposuretime_MAG_plot" style="min-width:475px;height:375px"></div>
+
+				</aside>
+				<footer class="webfoot">
+				<h2>&copy;Copyright AAO & NIAOT<h2>
+				</footer>				
+	</div>
+	</body>
+</html>
+	

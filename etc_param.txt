@@ -1,18 +1,18 @@
-256	Coadds
-2.0	Frame Time [s]
-0.00012	Sky Brightness [Jy]
-0.9	Focal Length [m]
-15.0	Read Noise [e]
-50.0	Dark Current [e/s]
-1.8e-05	Pixel Size [m]
-2048.0	Num of pixels on edge
-0.9	Quantum efficiency
-0.26	Aperture diameter [m]
-0.95	Average sky transmission
-0.98	Filter throughpout
-0.005	Transmission loss per surface
-4.0	Number of transmission losses
-0.04	Loss per rfelction
-1.0	Number of reflections
-2.38e-06	Central wavelength [m]
-2.26e-07	Passband [m]
+1		#Coadds
+300		#Frame Time [s]
+120e-06	#Sky Brightness [Jy arcsec^-2]
+0.525	#Focal Length [m]
+15.0	#Read Noise [e]
+50.0	#Dark Current [e/s]
+1.8e-05	#Pixel Size [m]
+2048.0	#Num of pixels on edge
+0.9		#Quantum efficiency
+0.26	#Aperture diameter [m]
+0.95	#Average sky transmission
+0.98	#Filter throughpout
+0.005	#Transmission loss per surface
+4.0		#Number of transmission losses
+0.04	#Loss per reflection
+1.0		#Number of reflections
+2.38e-06	#Central wavelength [m]
+2.26e-07	#Passband [m]
