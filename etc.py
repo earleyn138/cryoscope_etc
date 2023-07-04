@@ -26,7 +26,6 @@ class PlanExposure:
 		dark_current: 					in electrons per second per pixel
 		pix_size: 						pixel size in meters
 		npix_edge:						Length of the edge of the detector array in pixels, FOV defined by npix_edge x npix_edge
-		plate_scale: 					arcsec per pixel
 		qe: 							Quantum efficiency of detector
 		aperture_diam:					Aperture diameter in meters 
 
