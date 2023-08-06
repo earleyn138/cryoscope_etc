@@ -1,6 +1,6 @@
-1	#Coadds
-300	#Frame Time [s]
-120e-06	#Sky Brightness [Jy arcsec^-2]
+1 #Coadds
+300 #Frame Time [s]
+120e-06 #Sky Brightness [Jy arcsec^-2]
 0.525	#Focal Length [m]
 15.0	#Read Noise [e]
 50.0	#Dark Current [e/s]
@@ -13,6 +13,8 @@
 0.005	#Transmission loss per surface
 4.0	#Number of transmission losses
 0.04	#Loss per reflection
-1.0	#Number of reflections
+1.0#Number of reflections
 2.38e-06 #Central wavelength [m]
 2.26e-07 #Passband [m]
+ashley_sky.csv #Sky background data
+ashley_skytrans.csv #Sky transmission data
