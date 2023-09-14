@@ -1,0 +1,23 @@
+512      #Coadds
+2        #Frame Time [s]
+120e-06  #Avg Sky Brightness [Jy arcsec^-2], relevant only if sky brightness data file not provided
+0.525	 #Focal Length [m]
+15.0	 #Read Noise [e]
+50.0	 #Dark Current [e/s]
+1.8e-05	 #Pixel Size [m]
+8.0e-03	 #Beam obstruction [m^2]
+0.9	 #Avg Quantum efficiency, relevant only if QE data file not provided
+0.26	 #Aperture diameter [m]
+0.95	 #Avg sky transmission, relevant only if sky transmission data file not provided 
+0.98	 #Avg filter transmission, relevant only if filter transmission data file  not provided
+0.005	 #Transmission loss per surface
+4.0	 #Number of transmission losses
+0.04	 #Loss per reflection
+1.0      #Number of reflections
+2.38e-06 #Central wavelength [m], relevant only if filter transmission data file not provided
+2.49e-07 #Passband [m], relevant only if filter transmission data file not provided
+-80.0    #Window temperature [Celsius]
+data_files/ashley_sky.csv      #Sky brightness data file
+data_files/ashley_skytrans.csv #Sky transmission data file
+data_files/H2RG_qedata.csv     #QE data file
+data_files/Asahi_Kdark.csv     #Filter transmission data file
