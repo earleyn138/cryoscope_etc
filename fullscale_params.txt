@@ -4,7 +4,7 @@
 2.0	 #Focal Length [m]
 15.0	 #Read Noise [e]
 50.0	 #Dark Current [e/s]
-1.00e-06 #Pixel Size [m]
+1.00e-05 #Pixel Size [m]
 2.70E-01 #Beam obstruction [m^2]
 0.9	 #Avg Quantum efficiency, relevant only if QE data file not provided
 1.0	 #Aperture diameter [m]

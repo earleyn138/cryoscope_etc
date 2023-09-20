@@ -323,8 +323,9 @@ class PlanExposure:
 			# Solving quadratic: S**2 * texp**2 - snr_desired**2 * (S+B+D)*texp - (snr_desired**2+R) = 0
 			coeff = [S**2, -snr_desired**2 * (S+B+D), -(snr_desired**2+R)]
 			texp = np.roots(coeff)
-			times.append(texp[texp>0])
+			times.append((texp[texp>0])[0])
 
+		times = np.array(times)
 
 		fig, ax1 = plt.subplots()
 		ax1.plot(mag_range, times)
