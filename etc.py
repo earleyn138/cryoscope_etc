@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.integrate import trapz
-from scipy.interpolate import CubicSpline
 
 h = 6.626E-34 #Planck constant, units: J s
 c = 3e8 #speed of light, units: m/s
@@ -143,8 +142,9 @@ class PlanExposure:
 			if not self.filterTransmission_file:
 				self.wavgrid = np.linspace(self.lambda0-self.passband/2, self.lambda0+self.passband/2)
 			else:
-				wavgrid_um, self.filter_throughput = np.loadtxt(self.filterTransmission_file,delimiter=',',unpack=True)
-				self.wavgrid = 1e-6*wavgrid_um #m
+				wavgrid_nm, self.filter_throughput = np.loadtxt(self.filterTransmission_file,delimiter=',',unpack=True,skiprows=1)
+				self.wavgrid = wavgrid_nm[::-1]*(10**-9) #m
+				self.filter_throughput = self.filter_throughput[::-1]/100
 
 
 			self.Egrid = h*c/self.wavgrid
@@ -163,11 +163,9 @@ class PlanExposure:
 
 			#Quantum efficiency
 			self.qedata_wav, self.qedata = np.loadtxt(self.qe_file,delimiter=',',unpack=True)
-			self.fit_qe = CubicSpline(self.qedata_wav,self.qedata)
-			self.qe_lambda = np.zeros(self.wavgrid.size)
-			detector_cutoff = self.qedata_wav[-1]
-			self.qe_lambda[np.where(self.wavgrid<=detector_cutoff)] = self.fit_qe(self.wavgrid[np.where(self.wavgrid<=detector_cutoff)])
-			#Transmission as a function of lambda 
+			self.qe_lambda = np.interp(self.wavgrid,self.qedata_wav,self.qedata)
+
+			#Transmission as a function of lambda
 			self.transmission_lambda = (self.skyT_grid*self.filter_throughput*self.optical_throughput)
 
 		else:
@@ -323,16 +321,26 @@ class PlanExposure:
 			# Solving quadratic: S**2 * texp**2 - snr_desired**2 * (S+B+D)*texp - (snr_desired**2+R) = 0
 			coeff = [S**2, -snr_desired**2 * (S+B+D), -(snr_desired**2+R)]
 			texp = np.roots(coeff)
-			times.append((texp[texp>0])[0])
+			times.append(texp[texp>0][0])
 
-		times = np.array(times)
+			# R = self.neff*(self.read_noise**2)
+			# # Solving quadratic: S**2 * (self.frame_time*ncoadds)**2 - snr_desired**2 * (S+B+D)*(self.frame_time*ncoadds) - (snr_desired**2+ncoadds*R) = 0
+			# coeff = [(S*self.frame_time)**2, -(snr_desired**2 * (S+B+D)*self.frame_time + R), -(snr_desired**2)]
 
-		fig, ax1 = plt.subplots()
-		ax1.plot(mag_range, times)
-		ax1.set_xlabel('Magnitude')
-		ax1.set_ylabel('Required Time (s)')
-		ax1.tick_params(axis='y')
-		ax1.set_yscale('log')
+			# ncoadds = np.roots(coeff)
+			# print(ncoadds)
+			# times.append(self.frame_time*(ncoadds[ncoadds>0])[0])
+
+			
+
+		# times = np.array(times)
+		#
+		# fig, ax1 = plt.subplots()
+		# ax1.plot(mag_range, times)
+		# ax1.set_xlabel('Magnitude')
+		# ax1.set_ylabel('Required Time (s)')
+		# ax1.tick_params(axis='y')
+		# ax1.set_yscale('log')
 
 		return times
 

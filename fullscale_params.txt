@@ -19,5 +19,5 @@
 -80.0    #Window temperature [Celsius]
 data_files/ashley_sky.csv      #Sky brightness data file
 data_files/ashley_skytrans.csv #Sky transmission data file
-data_files/H2RG_qedata.csv     #QE data file
-data_files/Asahi_Kdark.csv     #Filter transmission data file
+data_files/hellstar_qe.csv     #QE data file
+data_files/kdarkfilter.csv     #Filter transmission data file
