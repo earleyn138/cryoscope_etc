@@ -5,16 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="48c448b5-8597-44ee-b4c3-4b9ab035b647" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.name" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.name" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/cryoscope_etc.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/cryoscope_etc.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.ipynb_checkpoints/test_etc-checkpoint.ipynb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CRSP_ETC09132023.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/CRSP_ETC09132023.xlsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/etc.py" beforeDir="false" afterPath="$PROJECT_DIR$/etc.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fullscale_params.txt" beforeDir="false" afterPath="$PROJECT_DIR$/fullscale_params.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/prototype_params.txt" beforeDir="false" afterPath="$PROJECT_DIR$/prototype_params.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_etc.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,7 +59,7 @@
       <updated>1691296599724</updated>
       <workItem from="1708556274218" duration="475000" />
       <workItem from="1709587759531" duration="6113000" />
-      <workItem from="1715287515534" duration="43766000" />
+      <workItem from="1715287515534" duration="45808000" />
     </task>
     <servers />
   </component>

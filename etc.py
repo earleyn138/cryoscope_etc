@@ -22,8 +22,6 @@ class PlanExposure:
 	---------------------------------------------------------------------------------------------------------------------------------------------------
 	Telescope, on-site, observing properties from user input:
 		OBSERVING SPECIFICS
-			coadds: int
-				Number of coadds
 			frame_time: float
 				Time for one frame (s)
 			avg_skyBrightness: float
@@ -481,13 +479,14 @@ class PlanExposure:
 		})
 
 		return data
-	# Need to allow for multiple plots
+
 	def calc_snr(self, ab_mag, coadds, plot=False):
 		"""
 		Calculates SNR for the total integration given an AB magnitude for a source and a certain number of coadds
 
 		:param ab_mag: float - AB magnitude of the point source
 		:param coadds: int - Number of coadds
+		:param plot: bool - If True, plot SNR vs. AB magnitude
 		:return: data: dict - Dictionary containing source rate, sky rate, TSE rate, detector counts, single frame SNR,
 			and total SNR
 		"""
@@ -520,6 +519,7 @@ class PlanExposure:
 
 		:param mag_range: np.ndarray - Array of magnitudes to plot SNR for
 		:param snr_desired: float - Desired SNR
+		:param plot: bool - If True, plot exposure time vs. magnitude
 		:return: times: np.ndarray - Array of required exposure times
 		"""
 		data_frame = self.calc_snr_frame(mag_range)
