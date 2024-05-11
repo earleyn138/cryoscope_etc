@@ -1,9 +1,8 @@
-512      #Coadds
 2        #Frame Time [s]
 120e-06  #Avg Sky Brightness [Jy arcsec^-2], relevant only if sky brightness data file not provided
 2.0	 #Focal Length [m]
 15.0	 #Read Noise [e]
-50.0	 #Dark Current [e/s]
+0.1	 #Dark Current [e/s]
 1.00e-05 #Pixel Size [m]
 2.70E-01 #Beam obstruction [m^2]
 0.9	 #Avg Quantum efficiency, relevant only if QE data file not provided
@@ -21,3 +20,4 @@ data_files/ashley_sky.csv      #Sky brightness data file
 data_files/ashley_skytrans.csv #Sky transmission data file
 data_files/hellstar_qe.csv     #QE data file
 data_files/kdarkfilter.csv     #Filter transmission data file
+Skip       #SiO2 lens transmission data for TSE
